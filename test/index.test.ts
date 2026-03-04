@@ -3,17 +3,15 @@ import { mount } from '@vue/test-utils'
 import { beforeEach, describe, it, vi } from 'vitest'
 import { defineComponent } from 'vue'
 
-import * as VueDemi from 'vue-demi'
+import * as Vue from 'vue'
 
 import defineUseDependencyInjection from '~'
 
-vi.mock('vue-demi', async (importOriginal) => {
-  const $VueDemi = await importOriginal()
+vi.mock('vue', async (importOriginal) => {
+  const $Vue = await importOriginal<any>()
   return {
-    // @ts-expect-error - mock
-    ...$VueDemi,
-    // @ts-expect-error - mock
-    inject: vi.fn($VueDemi.inject),
+    ...$Vue,
+    inject: vi.fn($Vue.inject),
   }
 })
 
@@ -122,7 +120,7 @@ describe.concurrent(`defineUseDependencyInjection options correct behavior`, () 
 
     mount(ParentComponent)
 
-    expect(vi.mocked(VueDemi.inject).mock.lastCall?.[0]).toBe(testKey)
+    expect(vi.mocked(Vue.inject).mock.lastCall?.[0]).toBe(testKey)
   })
 
   it(`options with injectDefault`, async ({ expect }) => {

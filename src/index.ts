@@ -1,6 +1,6 @@
-import type { InjectionKey } from 'vue-demi'
+import type { InjectionKey } from 'vue'
 
-import { inject, provide } from 'vue-demi'
+import { inject, provide } from 'vue'
 
 export interface WithInjectDefault<T> {
   injectDefault: T | (() => T)

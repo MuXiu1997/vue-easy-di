@@ -8,7 +8,6 @@ export default defineConfig({
   dts: true,
   clean: true,
   sourcemap: true,
-  noExternal: ['vue-demi'],
   inlineOnly: false,
   outputOptions: {
     name: 'VueEasyDi',
