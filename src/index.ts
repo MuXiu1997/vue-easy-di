@@ -43,151 +43,73 @@ export interface UseInitiatedDependencyInjection<T> extends UseDependencyInjecti
 }
 
 /**
- * Defines a composable for Vue that provides or injects a value.
+ * Creates a DI composable without an initializer or inject safety net.
  *
- * @template T - The type of the value to be provided or injected.
+ * In provide mode, an initializer must be passed at call site.
+ * In inject mode, returns `T | undefined` — the caller is responsible for handling the missing-provider case.
  *
- * @param options - Configuration options for the composable.
- * @param options.key - An optional InjectionKey or string to uniquely identify the value in the Vue application's dependency injection system.
- * @param options.injectDefault - An optional default value to be used when none is provided. Can be either an instance of T or a factory function returning one.
- * @param options.throwOnNoProvider - An optional function that returns an error to be thrown when no value is provided, and no default is specified.
- *
- * @returns A UseInitiatedDependencyInjection function that can be called with 'provide' or 'inject' to either provide a value to the Vue component tree, or inject an existing one from a parent component. If neither 'provide' nor 'inject' is specified, it defaults to 'inject'.
+ * @param [options] - Configuration options.
+ * @param [options.key] - Custom injection key. A unique Symbol is generated if omitted.
+ * @returns A composable that can be called in 'provide' or 'inject' (default) mode.
  *
  * @example
- * // Defining a dependency injection composable
- * const useMyDependency = defineUseDependencyInjection<MyType>(() => newMyType());
+ * const useFoo = defineUseDependencyInjection<Foo>()
+ * // or with a custom key
+ * const useFoo = defineUseDependencyInjection<Foo>({ key: Symbol('foo') })
  *
- * // Providing a value at the parent component
- * const parentComponent = defineComponent({
- *   setup() {
- *     const myDependency = useMyDependency('provide');
- *
- *     // Or overrides default initializer
- *     const myDependency = useMyDependency('provide', () => newMyType());
- *   }
- * });
- *
- * // Injecting a value in a child component
- * const childComponent = defineComponent({
- *   setup() {
- *     const myDependency = useMyDependency('inject');
- *
- *     // Or omit 'inject' because it is the default
- *     const myDependency = useMyDependency();
- *   }
- * });
- *
- * // Using with default value
- * const useDefaultDependency = defineUseDependencyInjection<MyType>({ injectDefault: () => newMyType() });
- * // Using with default value in inject mode
- * const myDependency = useDefaultDependency('inject', { injectDefault: () => newMyType() });
- *
- * // Throwing error when no provider is found
- * const useStrictDependency = defineUseDependencyInjection<MyType>({ throwOnNoProvider: () => new Error('No provider found for useStrictDependency') });
- * // Throwing error when no provider is found in inject mode
- * const myDependency = useStrictDependency('inject', { throwOnNoProvider: () => new Error('No provider found for myDependency') });
+ * useFoo('provide', () => new Foo()) // in parent
+ * const foo = useFoo()               // in child, foo: Foo | undefined
  */
 export default function defineUseDependencyInjection<T extends NonNullable<unknown>>(
   options?: Pick<Options<T>, 'key'>,
 ): UseDependencyInjection<T | undefined>
 
 /**
- * Defines a composable for Vue that provides or injects a value.
+ * Creates a DI composable without an initializer, but with an inject safety net.
  *
- * @template T - The type of the value to be provided or injected.
+ * In provide mode, an initializer must be passed at call site.
+ * In inject mode, either falls back to `injectDefault` or throws via `throwOnNoProvider`,
+ * so the return type is always `T`.
  *
- * @param options - Configuration options for the composable.
- * @param options.key - An optional InjectionKey or string to uniquely identify the value in the Vue application's dependency injection system.
- * @param options.injectDefault - An optional default value to be used when none is provided. Can be either an instance of T or a factory function returning one.
- * @param options.throwOnNoProvider - An optional function that returns an error to be thrown when no value is provided, and no default is specified.
- *
- * @returns A UseInitiatedDependencyInjection function that can be called with 'provide' or 'inject' to either provide a value to the Vue component tree, or inject an existing one from a parent component. If neither 'provide' nor 'inject' is specified, it defaults to 'inject'.
+ * @param options - Configuration options.
+ * @param [options.key] - Custom injection key. A unique Symbol is generated if omitted.
+ * @param options.injectDefault - Default value (or factory) used when no provider is found.
+ * @param options.throwOnNoProvider - Factory that returns an Error to throw when no provider is found.
+ * @returns A composable that can be called in 'provide' or 'inject' (default) mode.
  *
  * @example
- * // Defining a dependency injection composable
- * const useMyDependency = defineUseDependencyInjection<MyType>(() => newMyType());
+ * const useFoo = defineUseDependencyInjection<Foo>({
+ *   injectDefault: () => Foo.empty(),
+ * })
+ * const foo = useFoo() // foo: Foo (never undefined)
  *
- * // Providing a value at the parent component
- * const parentComponent = defineComponent({
- *   setup() {
- *     const myDependency = useMyDependency('provide');
- *
- *     // Or overrides default initializer
- *     const myDependency = useMyDependency('provide', () => newMyType());
- *   }
- * });
- *
- * // Injecting a value in a child component
- * const childComponent = defineComponent({
- *   setup() {
- *     const myDependency = useMyDependency('inject');
- *
- *     // Or omit 'inject' because it is the default
- *     const myDependency = useMyDependency();
- *   }
- * });
- *
- * // Using with default value
- * const useDefaultDependency = defineUseDependencyInjection<MyType>({ injectDefault: () => newMyType() });
- * // Using with default value in inject mode
- * const myDependency = useDefaultDependency('inject', { injectDefault: () => newMyType() });
- *
- * // Throwing error when no provider is found
- * const useStrictDependency = defineUseDependencyInjection<MyType>({ throwOnNoProvider: () => new Error('No provider found for useStrictDependency') });
- * // Throwing error when no provider is found in inject mode
- * const myDependency = useStrictDependency('inject', { throwOnNoProvider: () => new Error('No provider found for myDependency') });
+ * @example
+ * const useFoo = defineUseDependencyInjection<Foo>({
+ *   throwOnNoProvider: () => new Error('Foo provider is required'),
+ * })
+ * const foo = useFoo() // foo: Foo (throws if no provider)
  */
 export default function defineUseDependencyInjection<T extends NonNullable<unknown>>(
   options: Options<T>,
 ): UseDependencyInjection<T>
 
 /**
- * Defines a composable for Vue that provides or injects a value.
+ * Creates a DI composable with a default initializer.
  *
- * @template T - The type of the value to be provided or injected.
+ * In provide mode, the initializer is called automatically (can be overridden).
+ * In inject mode, returns `T | undefined` — the caller is responsible for handling the missing-provider case.
  *
- * @param initializer - An optional initializer for the value to be provided.
- * @param options - Configuration options for the composable.
- * @param options.key - An optional InjectionKey or string to uniquely identify the value in the Vue application's dependency injection system.
- * @param options.injectDefault - An optional default value to be used when none is provided. Can be either an instance of T or a factory function returning one.
- * @param options.throwOnNoProvider - An optional function that returns an error to be thrown when no value is provided, and no default is specified.
- *
- * @returns A UseInitiatedDependencyInjection function that can be called with 'provide' or 'inject' to either provide a value to the Vue component tree, or inject an existing one from a parent component. If neither 'provide' nor 'inject' is specified, it defaults to 'inject'.
+ * @param initializer - Factory function called in provide mode to create the value.
+ * @param [options] - Configuration options.
+ * @param [options.key] - Custom injection key. A unique Symbol is generated if omitted.
+ * @returns A composable that can be called in 'provide' or 'inject' (default) mode.
  *
  * @example
- * // Defining a dependency injection composable
- * const useMyDependency = defineUseDependencyInjection<MyType>(() => newMyType());
+ * const useFoo = defineUseDependencyInjection(() => new Foo())
  *
- * // Providing a value at the parent component
- * const parentComponent = defineComponent({
- *   setup() {
- *     const myDependency = useMyDependency('provide');
- *
- *     // Or overrides default initializer
- *     const myDependency = useMyDependency('provide', () => newMyType());
- *   }
- * });
- *
- * // Injecting a value in a child component
- * const childComponent = defineComponent({
- *   setup() {
- *     const myDependency = useMyDependency('inject');
- *
- *     // Or omit 'inject' because it is the default
- *     const myDependency = useMyDependency();
- *   }
- * });
- *
- * // Using with default value
- * const useDefaultDependency = defineUseDependencyInjection<MyType>({ injectDefault: () => newMyType() });
- * // Using with default value in inject mode
- * const myDependency = useDefaultDependency('inject', { injectDefault: () => newMyType() });
- *
- * // Throwing error when no provider is found
- * const useStrictDependency = defineUseDependencyInjection<MyType>({ throwOnNoProvider: () => new Error('No provider found for useStrictDependency') });
- * // Throwing error when no provider is found in inject mode
- * const myDependency = useStrictDependency('inject', { throwOnNoProvider: () => new Error('No provider found for myDependency') });
+ * useFoo('provide')                   // uses default initializer
+ * useFoo('provide', () => new Bar())  // overrides initializer
+ * const foo = useFoo()                // foo: Foo | undefined
  */
 export default function defineUseDependencyInjection<T extends NonNullable<unknown>>(
   initializer: () => T,
@@ -195,51 +117,26 @@ export default function defineUseDependencyInjection<T extends NonNullable<unkno
 ): UseInitiatedDependencyInjection<T | undefined>
 
 /**
- * Defines a composable for Vue that provides or injects a value.
+ * Creates a DI composable with both a default initializer and an inject safety net.
  *
- * @template T - The type of the value to be provided or injected.
+ * In provide mode, the initializer is called automatically (can be overridden).
+ * In inject mode, either falls back to `injectDefault` or throws via `throwOnNoProvider`,
+ * so the return type is always `T`.
  *
- * @param initializer - An optional initializer for the value to be provided.
- * @param options - Configuration options for the composable.
- * @param options.key - An optional InjectionKey or string to uniquely identify the value in the Vue application's dependency injection system.
- * @param options.injectDefault - An optional default value to be used when none is provided. Can be either an instance of T or a factory function returning one.
- * @param options.throwOnNoProvider - An optional function that returns an error to be thrown when no value is provided, and no default is specified.
- *
- * @returns A UseInitiatedDependencyInjection function that can be called with 'provide' or 'inject' to either provide a value to the Vue component tree, or inject an existing one from a parent component. If neither 'provide' nor 'inject' is specified, it defaults to 'inject'.
+ * @param initializer - Factory function called in provide mode to create the value.
+ * @param options - Configuration options.
+ * @param [options.key] - Custom injection key. A unique Symbol is generated if omitted.
+ * @param [options.injectDefault] - Default value (or factory) used when no provider is found.
+ * @param [options.throwOnNoProvider] - Factory that returns an Error to throw when no provider is found.
+ * @returns A composable that can be called in 'provide' or 'inject' (default) mode.
  *
  * @example
- * // Defining a dependency injection composable
- * const useMyDependency = defineUseDependencyInjection<MyType>(() => newMyType());
+ * const useFoo = defineUseDependencyInjection(() => new Foo(), {
+ *   throwOnNoProvider: () => new Error('Foo provider is required'),
+ * })
  *
- * // Providing a value at the parent component
- * const parentComponent = defineComponent({
- *   setup() {
- *     const myDependency = useMyDependency('provide');
- *
- *     // Or overrides default initializer
- *     const myDependency = useMyDependency('provide', () => newMyType());
- *   }
- * });
- *
- * // Injecting a value in a child component
- * const childComponent = defineComponent({
- *   setup() {
- *     const myDependency = useMyDependency('inject');
- *
- *     // Or omit 'inject' because it is the default
- *     const myDependency = useMyDependency();
- *   }
- * });
- *
- * // Using with default value
- * const useDefaultDependency = defineUseDependencyInjection<MyType>({ injectDefault: () => newMyType() });
- * // Using with default value in inject mode
- * const myDependency = useDefaultDependency('inject', { injectDefault: () => newMyType() });
- *
- * // Throwing error when no provider is found
- * const useStrictDependency = defineUseDependencyInjection<MyType>({ throwOnNoProvider: () => new Error('No provider found for useStrictDependency') });
- * // Throwing error when no provider is found in inject mode
- * const myDependency = useStrictDependency('inject', { throwOnNoProvider: () => new Error('No provider found for myDependency') });
+ * useFoo('provide')    // uses default initializer
+ * const foo = useFoo() // foo: Foo (throws if no provider)
  */
 export default function defineUseDependencyInjection<T extends NonNullable<unknown>>(
   initializer: () => T,
