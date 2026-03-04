@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.0](https://github.com/MuXiu1997/vue-easy-di/compare/v0.1.0-rc.3...v1.0.0) (2026-03-04)
+
+
+### Miscellaneous Chores
+
+* release 1.0.0 ([6e6c1a9](https://github.com/MuXiu1997/vue-easy-di/commit/6e6c1a9d8d617b82f7218d8a56cf6aa034097828))
+
 ## [0.1.0-rc.3](https://github.com/MuXiu1997/vue-easy-di/compare/v0.1.0-rc.2...v0.1.0-rc.3) (2026-03-04)
 
 
