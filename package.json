@@ -1,7 +1,7 @@
 {
   "name": "@muxiu1997/vue-easy-di",
   "type": "module",
-  "version": "0.1.0-rc.3",
+  "version": "1.0.0",
   "packageManager": "pnpm@10.30.3",
   "description": "Type-safe dependency injection for Vue, simplified into a single composable.",
   "source": "src/index.ts",
