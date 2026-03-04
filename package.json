@@ -3,7 +3,7 @@
   "type": "module",
   "version": "0.1.0-rc.2",
   "packageManager": "pnpm@10.30.3",
-  "description": "A Vue composable library for simplifying dependency injection.",
+  "description": "Type-safe dependency injection for Vue, simplified into a single composable.",
   "source": "src/index.ts",
   "author": "MuXiu1997 <muxiu1997@muxiu1997.com> (https://github.com/MuXiu1997)",
   "license": "MIT",
