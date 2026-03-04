@@ -200,26 +200,23 @@ export default function defineUseDependencyInjection<T extends NonNullable<unkno
 
     // mode: 'inject'
 
-    const overrideOptions = ($arg0 === 'inject' ? ($arg1 ?? {}) : ($arg0 ?? {})) as OverrideOptions<T>
+    const overrideOptions = ($arg0 === 'inject' ? $arg1 : $arg0) as OverrideOptions<T> | undefined
 
-    const finalOptions: Partial<WithInjectDefault<T> & WithThrowOnNoProvider> = { ...options }
-    // override options has higher priority than options
-    if (isWithInjectDefault<T>(overrideOptions)) {
-      finalOptions.injectDefault = overrideOptions.injectDefault
-      finalOptions.throwOnNoProvider = undefined
+    if (overrideOptions != null && isWithInjectDefault<T>(overrideOptions)) {
+      return inject(injectKey, overrideOptions.injectDefault, true)
     }
-    else if (isWithThrowOnNoProvider(overrideOptions)) {
-      finalOptions.throwOnNoProvider = overrideOptions.throwOnNoProvider
-      finalOptions.injectDefault = undefined
-    }
-
-    if (finalOptions.injectDefault != null) {
-      return inject(injectKey, finalOptions.injectDefault, true)
+    if (isWithInjectDefault<T>(options) && (overrideOptions == null || !isWithThrowOnNoProvider(overrideOptions))) {
+      return inject(injectKey, options.injectDefault, true)
     }
 
     const value = inject(injectKey)
-    if (value == null && isWithThrowOnNoProvider(finalOptions)) {
-      throw finalOptions.throwOnNoProvider()
+    if (value == null) {
+      if (overrideOptions != null && isWithThrowOnNoProvider(overrideOptions)) {
+        throw overrideOptions.throwOnNoProvider()
+      }
+      if (isWithThrowOnNoProvider(options)) {
+        throw options.throwOnNoProvider()
+      }
     }
 
     return value
