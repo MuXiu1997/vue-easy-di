@@ -5,59 +5,41 @@ on:
     branches:
       - main
 
-env:
-  NODE_VERSION: '20'
-  PNPM_VERSION: '8'
+permissions:
+  contents: write
+  pull-requests: write
 
 jobs:
-  release:
-    name: Release
+  release-please:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
-      pull-requests: write
+    outputs:
+      release_created: ${{ steps.release.outputs.release_created }}
+      tag_name: ${{ steps.release.outputs.tag_name }}
     steps:
-      - name: Release
+      - uses: googleapis/release-please-action@v4
         id: release
-        uses: google-github-actions/release-please-action@v3
         with:
           release-type: node
 
-      - name: Checkout
-        if: ${{ steps.release.outputs.release_created }}
-        uses: actions/checkout@v3
+  publish:
+    needs: release-please
+    if: ${{ needs.release-please.outputs.release_created }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
         with:
-          ref: ${{ steps.release.outputs.tag_name }}
+          ref: ${{ needs.release-please.outputs.tag_name }}
 
-      - name: Setup Pnpm
-        if: ${{ steps.release.outputs.release_created }}
-        uses: pnpm/action-setup@v2
-        with:
-          version: ${{ env.PNPM_VERSION }}
+      - uses: jdx/mise-action@v3
 
-      - name: Setup Node
-        if: ${{ steps.release.outputs.release_created }}
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-          cache: pnpm
-          cache-dependency-path: '**/pnpm-lock.yaml'
-          registry-url: 'https://registry.npmjs.org'
+      - name: Install dependencies
+        run: mise exec -- pnpm install --frozen-lockfile
 
-      - name: Install Node Dependencies
-        if: ${{ steps.release.outputs.release_created }}
-        run: pnpm install
-
-      - name: Test
-        if: ${{ steps.release.outputs.release_created }}
-        run: pnpm run test --run
-
-      - name: Bundle
-        if: ${{ steps.release.outputs.release_created }}
-        run: pnpm run bundle
+      - name: Build
+        run: mise exec -- pnpm run build
 
       - name: Publish
-        if: ${{ steps.release.outputs.release_created }}
-        run: pnpm publish --access public --no-git-checks
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: mise exec -- pnpm publish --access public --no-git-checks --provenance
