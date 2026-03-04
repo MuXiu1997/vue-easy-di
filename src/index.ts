@@ -16,6 +16,9 @@ export type Options<T> = {
 
 export type OverrideOptions<T> = (WithInjectDefault<T> | WithThrowOnNoProvider)
 
+/** Auto-incrementing id used to generate unique default {@link Symbol} injection keys. */
+let uid = 0
+
 function isWithInjectDefault<T>(options: unknown): options is WithInjectDefault<T> {
   return typeof options === 'object' && options != null && 'injectDefault' in options && options.injectDefault != null
 }
@@ -178,8 +181,7 @@ export default function defineUseDependencyInjection<T extends NonNullable<unkno
   }
   // no argument do nothing
 
-  // eslint-disable-next-line symbol-description
-  const injectKey = options.key ?? (Symbol() as InjectionKey<T>)
+  const injectKey = options.key ?? (Symbol(`vue-easy-di-${uid++}`) as InjectionKey<T>)
   return function UseDependencyInjection($arg0: unknown, $arg1: unknown) {
     // mode: 'provide'
 
