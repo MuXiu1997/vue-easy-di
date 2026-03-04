@@ -1,5 +1,6 @@
-import { expectTypeOf } from 'vitest'
+import type { TestType } from '#/index.test'
 
+import type { UseDependencyInjection, UseInitiatedDependencyInjection } from '~'
 import {
   initializer,
   optionsWithInjectDefault,
@@ -7,10 +8,9 @@ import {
   overrideOptionsWithInjectDefault,
   overrideOptionsWithThrowOnNoProvider,
 } from '#/index.test'
-import defineUseDependencyInjection from '~'
 
-import type { TestType } from '#/index.test'
-import type { UseDependencyInjection, UseInitiatedDependencyInjection } from '~'
+import { expectTypeOf } from 'vitest'
+import defineUseDependencyInjection from '~'
 
 describe('defineUseDependencyInjection return correct type with different arguments', () => {
   test('With initializer', () => {

@@ -1,6 +1,6 @@
-import { inject, provide } from 'vue-demi'
-
 import type { InjectionKey } from 'vue-demi'
+
+import { inject, provide } from 'vue-demi'
 
 export interface WithInjectDefault<T> {
   injectDefault: T | (() => T)
@@ -149,7 +149,7 @@ export default function defineUseDependencyInjection<T extends NonNullable<unkno
 export default function defineUseDependencyInjection<T extends NonNullable<unknown>>(
   initializer: () => T,
   options: Partial<Options<T>>,
-): UseInitiatedDependencyInjection<T >
+): UseInitiatedDependencyInjection<T>
 
 export default function defineUseDependencyInjection<T extends NonNullable<unknown>>(
   arg0: (() => T) | Partial<Options<T>> | undefined = undefined,
@@ -189,7 +189,8 @@ export default function defineUseDependencyInjection<T extends NonNullable<unkno
       }
       const overrideInitializer = $arg1 as (() => T) | undefined
       const value = overrideInitializer?.() ?? initializer?.()
-      if (value == null) throw new Error(`UseDependencyInjection value \`${injectKey.toString()}\` is not initialized`)
+      if (value == null)
+        throw new Error(`UseDependencyInjection value \`${injectKey.toString()}\` is not initialized`)
       provide(injectKey, value)
 
       return value

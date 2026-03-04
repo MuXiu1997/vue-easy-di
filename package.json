@@ -2,6 +2,7 @@
   "name": "@muxiu1997/vue-easy-di",
   "type": "module",
   "version": "0.1.0-rc.2",
+  "packageManager": "pnpm@10.30.3",
   "description": "A Vue composable library for simplifying dependency injection.",
   "source": "src/index.ts",
   "author": "MuXiu1997 <muxiu1997@gmail.com> (https://github.com/MuXiu1997/)",
@@ -31,15 +32,14 @@
   "files": [
     "dist"
   ],
+  "engines": {
+    "node": ">=24"
+  },
   "scripts": {
     "lint": "eslint --fix .",
     "test": "vitest --typecheck",
     "coverage": "vitest --typecheck --coverage",
     "build": "tsdown"
-  },
-  "packageManager": "pnpm@10.30.3",
-  "engines": {
-    "node": ">=24"
   },
   "peerDependencies": {
     "@vue/composition-api": "^1.0.0-rc.1",

@@ -1,11 +1,11 @@
+import type { WithInjectDefault, WithThrowOnNoProvider } from '~'
 import { mount } from '@vue/test-utils'
 import { beforeEach, describe, it, vi } from 'vitest'
 import { defineComponent } from 'vue'
+
 import * as VueDemi from 'vue-demi'
 
 import defineUseDependencyInjection from '~'
-
-import type { WithInjectDefault, WithThrowOnNoProvider } from '~'
 
 vi.mock('vue-demi', async (importOriginal) => {
   const $VueDemi = await importOriginal()
@@ -93,7 +93,7 @@ describe.concurrent(`defineUseDependencyInjection initializer correct behavior`,
     const wrapper = mount(ParentComponent)
     const injected = wrapper.getComponent(ChildComponent).vm.injected
 
-    expect(injected?.msg).toMatch(/\[initializer]/)
+    expect(injected?.msg).toMatch(/\[initializer\]/)
   })
   it(`initializer not a function`, async ({ expect }) => {
     expect(() => {
@@ -112,7 +112,7 @@ describe.concurrent(`defineUseDependencyInjection options correct behavior`, () 
     const wrapper = mount(ParentComponent)
     const injected = wrapper.getComponent(ChildComponent).vm.injected
 
-    expect(injected?.msg).toMatch(/\[initializer]/)
+    expect(injected?.msg).toMatch(/\[initializer\]/)
   })
 
   it(`options with key`, async ({ expect }) => {
@@ -132,14 +132,14 @@ describe.concurrent(`defineUseDependencyInjection options correct behavior`, () 
     const wrapper = mount(ParentComponent)
     const injected = wrapper.getComponent(ChildComponent).vm.injected
 
-    expect(injected?.msg).toMatch(/\[optionsWithInjectDefault]/)
+    expect(injected?.msg).toMatch(/\[optionsWithInjectDefault\]/)
   })
 
   it(`options with throwOnNoProvider`, async ({ expect }) => {
     const u = defineUseDependencyInjection<TestType>(optionsWithThrowOnNoProvider)
     const [ParentComponent, _] = createComponents(() => undefined, () => u())
 
-    expect(() => mount(ParentComponent)).toThrow(/\[optionsWithThrowOnNoProvider]/)
+    expect(() => mount(ParentComponent)).toThrow(/\[optionsWithThrowOnNoProvider\]/)
   })
 })
 
@@ -152,7 +152,7 @@ describe.concurrent(`useDependencyInjection provide mode correct behavior`, () =
     const wrapper = mount(ParentComponent)
     const injected = wrapper.getComponent(ChildComponent).vm.injected
 
-    expect(injected?.msg).toMatch(/\[overrideInitializer]/)
+    expect(injected?.msg).toMatch(/\[overrideInitializer\]/)
   })
   it(`override initializer not a function`, async ({ expect }) => {
     const u = defineUseDependencyInjection<TestType>(initializer)
@@ -172,7 +172,7 @@ describe.concurrent(`useDependencyInjection inject mode correct behavior`, () =>
     const wrapper = mount(ParentComponent)
     const injected = wrapper.getComponent(ChildComponent).vm.injected
 
-    expect(injected?.msg).toMatch(/\[initializer]/)
+    expect(injected?.msg).toMatch(/\[initializer\]/)
   })
 
   it(`override options with injectDefault`, async ({ expect }) => {
@@ -182,13 +182,13 @@ describe.concurrent(`useDependencyInjection inject mode correct behavior`, () =>
     const wrapper = mount(ParentComponent)
     const injected = wrapper.getComponent(ChildComponent).vm.injected
 
-    expect(injected?.msg).toMatch(/\[overrideOptionsWithInjectDefault]/)
+    expect(injected?.msg).toMatch(/\[overrideOptionsWithInjectDefault\]/)
   })
 
   it(`override options with throwOnNoProvider`, async ({ expect }) => {
     const u = defineUseDependencyInjection<TestType>(initializer, optionsWithInjectDefault)
     const [ParentComponent, _] = createComponents(() => undefined, () => u(overrideOptionsWithThrowOnNoProvider))
 
-    expect(() => mount(ParentComponent)).toThrow(/\[overrideOptionsWithThrowOnNoProvider]/)
+    expect(() => mount(ParentComponent)).toThrow(/\[overrideOptionsWithThrowOnNoProvider\]/)
   })
 })

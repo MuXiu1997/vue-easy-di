@@ -13,7 +13,7 @@ export default defineConfig({
   outputOptions: {
     name: 'VueEasyDi',
     globals: {
-      'vue': 'Vue',
+      vue: 'Vue',
     },
-  }
+  },
 })
