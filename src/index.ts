@@ -16,6 +16,14 @@ export type Options<T> = {
 
 export type OverrideOptions<T> = (WithInjectDefault<T> | WithThrowOnNoProvider)
 
+function isWithInjectDefault<T>(options: unknown): options is WithInjectDefault<T> {
+  return typeof options === 'object' && options != null && 'injectDefault' in options && options.injectDefault != null
+}
+
+function isWithThrowOnNoProvider(options: unknown): options is WithThrowOnNoProvider {
+  return typeof options === 'object' && options != null && 'throwOnNoProvider' in options && options.throwOnNoProvider != null
+}
+
 /**
  * A composable for dependency injection in a Vue component. It can be used in 'inject' or 'provide' mode.
  * It is not initialized, so in provide mode, initializer needs to be passed in
@@ -189,21 +197,15 @@ export default function defineUseDependencyInjection<T extends NonNullable<unkno
 
     // mode: 'inject'
 
-    let overrideOptions: OverrideOptions<T>
-    if ($arg0 === 'inject') {
-      overrideOptions = ($arg1 ?? {}) as OverrideOptions<T>
-    }
-    else {
-      overrideOptions = ($arg0 ?? {}) as OverrideOptions<T>
-    }
+    const overrideOptions = ($arg0 === 'inject' ? ($arg1 ?? {}) : ($arg0 ?? {})) as OverrideOptions<T>
 
-    const finalOptions = { ...options } as Partial<WithInjectDefault<T> & WithThrowOnNoProvider>
+    const finalOptions: Partial<WithInjectDefault<T> & WithThrowOnNoProvider> = { ...options }
     // override options has higher priority than options
-    if ('injectDefault' in overrideOptions && overrideOptions.injectDefault != null) {
+    if (isWithInjectDefault<T>(overrideOptions)) {
       finalOptions.injectDefault = overrideOptions.injectDefault
       finalOptions.throwOnNoProvider = undefined
     }
-    else if ('throwOnNoProvider' in overrideOptions && overrideOptions.throwOnNoProvider != null) {
+    else if (isWithThrowOnNoProvider(overrideOptions)) {
       finalOptions.throwOnNoProvider = overrideOptions.throwOnNoProvider
       finalOptions.injectDefault = undefined
     }
@@ -213,7 +215,7 @@ export default function defineUseDependencyInjection<T extends NonNullable<unkno
     }
 
     const value = inject(injectKey)
-    if (value == null && 'throwOnNoProvider' in finalOptions && finalOptions.throwOnNoProvider != null) {
+    if (value == null && isWithThrowOnNoProvider(finalOptions)) {
       throw finalOptions.throwOnNoProvider()
     }
 
