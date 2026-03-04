@@ -1,0 +1,10 @@
+[tools]
+node = "24"
+pnpm = "10.30.3"
+prek = "0.3.4"
+
+[hooks]
+postinstall = "prek install"
+
+[env]
+_.path = [ "{{ config_root }}/node_modules/.bin", ]
