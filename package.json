@@ -5,10 +5,14 @@
   "packageManager": "pnpm@10.30.3",
   "description": "A Vue composable library for simplifying dependency injection.",
   "source": "src/index.ts",
-  "author": "MuXiu1997 <muxiu1997@gmail.com> (https://github.com/MuXiu1997/)",
+  "author": "MuXiu1997 <muxiu1997@muxiu1997.com> (https://github.com/MuXiu1997)",
   "license": "MIT",
-  "homepage": "https://github.com/MuXiu1997/vue-easy-di",
-  "repository": "MuXiu1997/vue-easy-di",
+  "homepage": "https://github.com/MuXiu1997/vue-easy-di#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MuXiu1997/vue-easy-di.git"
+  },
+  "bugs": "https://github.com/MuXiu1997/vue-easy-di/issues",
   "keywords": [
     "vue",
     "vue-demi",
